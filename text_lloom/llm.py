@@ -15,12 +15,20 @@ import os
 import asyncio
 import tiktoken
 
+
 # OPENAI setup =============================
 import openai
 from openai import OpenAI, AsyncOpenAI
+os.environ['OPENAI_API_KEY'] = 'sk-proj-S0bnhxOJMgOeChyQIvvdT3BlbkFJaPaI4IINsKF4hPuDzlKs'
 
-# Use environment variables to store the API key
-openai_api_key = os.getenv("OPENAI_API_KEY")
+if "OPENAI_API_KEY" not in os.environ:
+    raise Exception("API key not found. Please set the OPENAI_API_KEY environment variable by running: `os.environ['OPENAI_API_KEY'] = 'your_key'`")
+client = AsyncOpenAI(
+    api_key=os.environ.get("OPENAI_API_KEY"),
+)
+embed_client = OpenAI(
+    api_key=os.environ.get("OPENAI_API_KEY"),
+)
 
 
 # CONSTANTS ================================

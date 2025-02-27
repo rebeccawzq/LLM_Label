@@ -30,82 +30,154 @@ from concept_induction import score_concepts
 # Load the dataset into a DataFrame
 df = pd.read_excel('education.xlsx')
 df = df.rename(columns={'id': 'doc_id'})
+text_col = "text"
+doc_id_col = "doc_id"
+parent_col = "parent"
 
 # Assuming you have already built concepts and have them as a dictionary of concept_id -> Concept objects
-concepts = {
-    "c1": Concept(name="School District Integration",
-                  prompt="Does the comment mention anything about School District Integration?",
-                  example_ids=["dsbt2tb"],
-                  active=True),
-
-    "c2": Concept(name="Invest $ in students",
-                  prompt="Does the comment mention anything about Investing in students (e.g., funding, resources)?",
-                  example_ids=["dseaozz"],
-                  active=True),
-
-    "c3": Concept(name="Decentralized Education Systems",
-                  prompt="Does the comment mention anything about Decentralized Education Systems?",
-                  example_ids=["dsbtzsn"],
-                  active=True),
-
-    "c4": Concept(name="Invest in pre-k",
-                  prompt="Does the comment mention anything about Investing in pre-K education?",
-                  example_ids=["dsdbi3x"],
-                  active=True),
-
-    "c5": Concept(name="Privatization",
-                  prompt="Does the comment mention anything about Privatization (e.g., vouchers, private schools)?",
-                  example_ids=["dsd5sxm"],
-                  active=True),
-
-    "c6": Concept(name="Adjust school resources (within and for)",
-                  prompt="Does the comment mention anything about Adjusting school resources within and for schools?",
-                  example_ids=["dsddsg3"],
-                  active=True),
-
-    "c7": Concept(name="Political bias",
-                  prompt="Does the comment mention anything about Political bias in education?",
-                  example_ids=["dsbzgmm"],
-                  active=True),
-
-    "c8": Concept(name="School power, to give teachers more agency (problematic students)",
-                  prompt="Does the comment mention anything about giving schools or teachers more power to handle problematic students?",
-                  example_ids=["dsdmsj8"],
-                  active=True),
-
-    "c9": Concept(name="Adjust school scheduling/timing",
-                  prompt="Does the comment mention anything about Adjusting school scheduling or timing?",
-                  example_ids=["dsc3xbs"],
-                  active=True),
-
-    "c10": Concept(name="Adjust student assessment metrics (eg standardized testing)",
-                   prompt="Does the comment mention anything about Adjusting student assessment metrics like standardized testing?",
-                   example_ids=["dsc4jlp"],
-                   active=True),
-
-    "c11": Concept(name="Professional development for teachers",
-                   prompt="Does the comment mention anything about Professional development for teachers?",
-                   example_ids=["dsd1mc6"],
-                   active=True),
-
-    "c12": Concept(name="Teacher compensation",
-                   prompt="Does the comment mention anything about Teacher compensation?",
-                   example_ids=["dsd50b8"],
-                   active=True),
-
-    "c13": Concept(name="Overhaul curriculum",
-                   prompt="Does the comment mention anything about Overhauling curriculum or alternatives to public schools (e.g., charter schools, trade schools)?",
-                   example_ids=["dsc8tbc"],
-                   active=True),
-
-    "c14": Concept(name="Promote parental involvement (Homeschooling)",
-                   prompt="Does the comment mention anything about Promoting parental involvement or homeschooling?",
-                   example_ids=["dscaxn8"],
-               active=True)
-}
+# concepts = {
+#     "c1": Concept(name="School District Integration",
+#                   prompt="Does the comment mention anything about School District Integration?",
+#                   example_ids=["dsbt2tb"],
+#                   active=True),
+#
+#     "c2": Concept(name="Invest $ in students",
+#                   prompt="Does the comment mention anything about Investing in students (e.g., funding, resources)?",
+#                   example_ids=["dseaozz"],
+#                   active=True),
+#
+#     "c3": Concept(name="Decentralized Education Systems",
+#                   prompt="Does the comment mention anything about Decentralized Education Systems?",
+#                   example_ids=["dsbtzsn"],
+#                   active=True),
+#
+#     "c4": Concept(name="Invest in pre-k",
+#                   prompt="Does the comment mention anything about Investing in pre-K education?",
+#                   example_ids=["dsdbi3x"],
+#                   active=True),
+#
+#     "c5": Concept(name="Privatization",
+#                   prompt="Does the comment mention anything about Privatization (e.g., vouchers, private schools)?",
+#                   example_ids=["dsd5sxm"],
+#                   active=True),
+#
+#     "c6": Concept(name="Adjust school resources (within and for)",
+#                   prompt="Does the comment mention anything about Adjusting school resources within and for schools?",
+#                   example_ids=["dsddsg3"],
+#                   active=True),
+#
+#     "c7": Concept(name="Political bias",
+#                   prompt="Does the comment mention anything about Political bias in education?",
+#                   example_ids=["dsbzgmm"],
+#                   active=True),
+#
+#     "c8": Concept(name="School power, to give teachers more agency (problematic students)",
+#                   prompt="Does the comment mention anything about giving schools or teachers more power to handle problematic students?",
+#                   example_ids=["dsdmsj8"],
+#                   active=True),
+#
+#     "c9": Concept(name="Adjust school scheduling/timing",
+#                   prompt="Does the comment mention anything about Adjusting school scheduling or timing?",
+#                   example_ids=["dsc3xbs"],
+#                   active=True),
+#
+#     "c10": Concept(name="Adjust student assessment metrics (eg standardized testing)",
+#                    prompt="Does the comment mention anything about Adjusting student assessment metrics like standardized testing?",
+#                    example_ids=["dsc4jlp"],
+#                    active=True),
+#
+#     "c11": Concept(name="Professional development for teachers",
+#                    prompt="Does the comment mention anything about Professional development for teachers?",
+#                    example_ids=["dsd1mc6"],
+#                    active=True),
+#
+#     "c12": Concept(name="Teacher compensation",
+#                    prompt="Does the comment mention anything about Teacher compensation?",
+#                    example_ids=["dsd50b8"],
+#                    active=True),
+#
+#     "c13": Concept(name="Overhaul curriculum",
+#                    prompt="Does the comment mention anything about Overhauling curriculum or alternatives to public schools (e.g., charter schools, trade schools)?",
+#                    example_ids=["dsc8tbc"],
+#                    active=True),
+#
+#     "c14": Concept(name="Promote parental involvement (Homeschooling)",
+#                    prompt="Does the comment mention anything about Promoting parental involvement or homeschooling?",
+#                    example_ids=["dscaxn8"],
+#                active=True)
+# }
 
 
 # Set the column names for document and document ID
+
+# Function to fetch parent comment text
+def fetch_parent_text(row, df):
+    parent_id = row[parent_col]
+    if isinstance(parent_id, str) and not parent_id.startswith("t3_"):  # Skip if it starts with t3
+        actual_parent_id = parent_id.split("_")[-1]  # Extract actual doc_id
+        parent_text = df.loc[df[doc_id_col] == actual_parent_id, text_col]
+        if not parent_text.empty:
+            return parent_text.values[0]  # Return the first match
+    return None  # Return None if no parent comment is found
+
+
+concepts = {
+    "c1": Concept(name="Problem Statement",
+                  prompt="Does the comment identify a status-quo issue related to the overall thread, without focusing on hypothetical problems with proposed solutions?",
+                  example_ids=["dscgz3z"],
+                  active=True),
+
+    "c2": Concept(name="Design Proposal",
+                  prompt="Does the comment suggest a solution to fix current issues or provide alternatives for other proposed solutions?",
+                  example_ids=["dsbzsw1"],
+                  active=True),
+
+    "c3": Concept(name="Logos Reasoning",
+                  prompt="Does the comment use logical reasoning, such as facts, causal relations, or additional logical details beyond just an opinion stance (e.g., agree/disagree)?",
+                  example_ids=["dscl5kq"],
+                  active=True),
+
+    "c4": Concept(name="Ethos Reasoning",
+                  prompt="Does the comment strengthen its argument or reasoning by bringing in experience as an authority, including personal experience?",
+                  example_ids=["dsctr83"],
+                  active=True),
+
+    "c5": Concept(name="Pathos Reasoning",
+                  prompt="Does the comment use emotional reasoning to appeal to feelings, aiming to evoke a reaction from the audience to agree with them?",
+                  example_ids=["dsey1oq"],
+                  active=True),
+
+    "c6": Concept(name="Disagreement",
+                  prompt=lambda row: (
+                      f"Does the comment explicitly express disagreement with the following parent comment? "
+                      f"Parent comment: \"{fetch_parent_text(row, df)}\""
+                      if fetch_parent_text(row, df) else
+                      "Does the comment explicitly express disagreement with a parent comment it replied to, rather than subtly implying disagreement?"
+                  ),
+                  example_ids=["dsbu8e9"],
+                  active=True),
+
+    "c7": Concept(name="Agreement",
+                  prompt=lambda row: (
+                      f"Does the comment explicitly confirm or agree with the following parent comment? "
+                      f"Parent comment: \"{fetch_parent_text(row, df)}\""
+                      if fetch_parent_text(row, df) else
+                      "Does the comment explicitly confirm or agree with a parent comment it replied to, supporting an idea (such as a design proposal, critique, or opinion)?"
+                  ),
+                  example_ids=["dsbz3s5"],
+                  active=True),
+
+    "c8": Concept(name="Questioning/Asking for Clarification",
+                  prompt="Does the comment primarily ask for responses from others in the discussion, without contributing additional information?",
+                  example_ids=["dsc5fa6"],
+                  active=True),
+
+    "c9": Concept(name="Humor",
+                  prompt="Is the comment primarily a joke, sarcasm, or pun without trying to add any new information? (Note: If sarcasm is used to make a point, it does not count as Humor.)",
+                  example_ids=["dscrk32"],
+                  active=True)
+}
+
 text_col = "text"
 doc_id_col = "doc_id"
 
@@ -124,21 +196,41 @@ def jaccard_similarity(setA, setB):
     return intersection / union
 
 
+# Function to process and replace lambda prompts dynamically
+def process_concepts(df):
+    processed_concepts = {}
+    for key, concept in concepts.items():
+        if callable(concept.prompt):  # If the prompt is a lambda function
+            processed_concepts[key] = Concept(
+                name=concept.name,
+                prompt=df.apply(concept.prompt, axis=1),  # Apply function row-wise
+                example_ids=concept.example_ids,
+                active=concept.active
+            )
+        else:
+            processed_concepts[key] = concept
+    return processed_concepts
 
 
 # Function to run the test
 async def main():
+    processed_concepts = process_concepts(df)
+
     # Score the comments
     runs_results = {}
 
-    for i in range(5):
-        score_df_run, summaries = await score_concepts(df, text_col=text_col, doc_id_col=doc_id_col, concepts=concepts,
+    for i in range(1):
+        score_df_run, summaries = await score_concepts(df, text_col=text_col, doc_id_col=doc_id_col, concepts=processed_concepts,
                                         model_name="gpt-3.5-turbo", get_highlights=True, batch_size=2)
 
         runs_results[f'{i}th_run'] = score_df_run
 
-
-
+    print(runs_results['0th_run'].head())
+    # Save the results to an Excel file
+    with pd.ExcelWriter('score_concepts_results.xlsx') as writer:
+        print('Saving results to Excel file...')
+        for run_name, score_df in runs_results.items():
+            score_df.to_excel(writer, sheet_name=run_name)
 
     # Display the results
     # print(score_df.columns)
