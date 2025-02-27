@@ -19,7 +19,7 @@ import tiktoken
 # OPENAI setup =============================
 import openai
 from openai import OpenAI, AsyncOpenAI
-os.environ['OPENAI_API_KEY'] = 'sk-proj-S0bnhxOJMgOeChyQIvvdT3BlbkFJaPaI4IINsKF4hPuDzlKs'
+ # Set your OpenAI API key here
 
 if "OPENAI_API_KEY" not in os.environ:
     raise Exception("API key not found. Please set the OPENAI_API_KEY environment variable by running: `os.environ['OPENAI_API_KEY'] = 'your_key'`")
